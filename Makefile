@@ -1,9 +1,11 @@
 obj-m += kfetch_mod_312551002.o
 DEVICE_NAME := kfetch_mod_312551002
 
-all: build load create_device_node
+all: build load create_device_node test
 
 build:
+	sudo apt update
+	sudo apt install gcc
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 
 load:
@@ -26,6 +28,11 @@ create_device_node:
 	    echo "/dev/kfetch_mod_312551002 already exists."; \
 	fi
 
+test:
+	cc ./kfetch.c -o ./kfetch
+	sudo ./kfetch -h
+	sudo ./kfetch -a
+	sudo ./kfetch -m -c
 
 clean:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
@@ -43,5 +50,7 @@ remove_device_node:
 	else \
 	    echo "/dev/$(DEVICE_NAME) does not exist."; \
 	fi
+
+
 
 .PHONY: all build load create_device_node clean unload remove_device_node
